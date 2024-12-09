@@ -27,7 +27,7 @@ export function activate({ subscriptions, extensionUri }: vscode.ExtensionContex
 
       portOptions.forEach(portOption => {
         console.log(portOption);
-        if (portOption.manufacturer !== "Silicon Labs") { return; }
+        if (!portOption.manufacturer?.startsWith("Silicon Labs")) { return; }
 
         serialPort = new SerialPort({
           path: portOption.path,
@@ -35,14 +35,15 @@ export function activate({ subscriptions, extensionUri }: vscode.ExtensionContex
         });
         serialPort.flush();
         serialPort.drain();
-        // serialPort.on('readable', function() {
-        //   console.log('Data:', serialPort.read())
-        // })
+        serialPort.on('readable', function() {
+          console.log('Data:', serialPort?.read())
+        })
 
       });
 
     }).catch(e => console.log(e));
   }
+  enableSerial();
 
   const onTextChanged = vscode.workspace.onDidChangeTextDocument((event) => {
     if (vscode.window.activeTextEditor && event.document === vscode.window.activeTextEditor.document) {
